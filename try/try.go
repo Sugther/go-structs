@@ -1,8 +1,8 @@
 package try
 
 import (
-	"go-structs/either"
-	"go-structs/option"
+	"github.com/Sugther/go-structs/either"
+	"github.com/Sugther/go-structs/option"
 )
 
 type Try[T any] struct {

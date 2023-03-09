@@ -1,7 +1,7 @@
 package list
 
 import (
-	"go-structs/option"
+	"github.com/Sugther/go-structs/option"
 )
 
 type List[T any] struct {

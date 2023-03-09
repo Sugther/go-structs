@@ -1,7 +1,7 @@
 package either
 
 import (
-	"go-structs/option"
+	"github.com/Sugther/go-structs/option"
 )
 
 type Either[L any, R any] struct {
