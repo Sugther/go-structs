@@ -5,26 +5,26 @@ import (
 )
 
 type Either[L any, R any] struct {
-	right option.Option[R]
-	left  option.Option[L]
+	Right option.Option[R]
+	Left  option.Option[L]
 }
 
 func Right[L any, R any](r R) Either[L, R] {
 	return Either[L, R]{
-		right: option.Pure(r),
-		left:  option.Empty[L](),
+		Right: option.Pure(r),
+		Left:  option.Empty[L](),
 	}
 }
 
 func Left[L any, R any](l L) Either[L, R] {
 	return Either[L, R]{
-		right: option.Empty[R](),
-		left:  option.Pure(l),
+		Right: option.Empty[R](),
+		Left:  option.Pure(l),
 	}
 }
 
 func IsRight[L any, R any](either Either[L, R]) bool {
-	return !either.right.IsEmpty()
+	return !either.Right.IsEmpty()
 }
 
 func (either Either[L, R]) IsRight() bool {
@@ -32,7 +32,7 @@ func (either Either[L, R]) IsRight() bool {
 }
 
 func IsLeft[L any, R any](either Either[L, R]) bool {
-	return !either.left.IsEmpty()
+	return !either.Left.IsEmpty()
 }
 
 func (either Either[L, R]) IsLeft() bool {
@@ -40,7 +40,7 @@ func (either Either[L, R]) IsLeft() bool {
 }
 
 func GetOrElse[L any, R any](either Either[L, R], defaultValue R) R {
-	return either.right.GetOrElse(defaultValue)
+	return either.Right.GetOrElse(defaultValue)
 }
 
 func (either Either[L, R]) GetOrElse(defaultValue R) R {
@@ -49,9 +49,9 @@ func (either Either[L, R]) GetOrElse(defaultValue R) R {
 
 func Fold[L any, R any, T any](either Either[L, R], fLeft func(L) T, fRight func(R) T) T {
 	if IsRight(either) {
-		return fRight(either.right.Get())
+		return fRight(either.Right.Get())
 	}
-	return fLeft(either.left.Get())
+	return fLeft(either.Left.Get())
 }
 
 func FlatMap[L any, R any, T any](either Either[L, R], f func(R) Either[L, T]) Either[L, T] {
@@ -64,7 +64,7 @@ func Map[L any, R any, T any](either Either[L, R], f func(R) T) Either[L, T] {
 
 func ForEach[L any, R any](either Either[L, R], f func(R)) {
 	if IsRight(either) {
-		f(either.right.Get())
+		f(either.Right.Get())
 	}
 }
 
@@ -74,7 +74,7 @@ func (either Either[L, R]) ForEach(f func(R)) {
 
 func IfLeft[L any, R any](either Either[L, R], f func(L)) {
 	if IsLeft(either) {
-		f(either.left.Get())
+		f(either.Left.Get())
 	}
 }
 
@@ -92,9 +92,9 @@ func MapLeft[L any, R any, T any](either Either[L, R], f func(L) T) Either[T, R]
 
 func BiForEach[L any, R any](either Either[L, R], fLeft func(L), fRight func(R)) {
 	if IsRight(either) {
-		fRight(either.right.Get())
+		fRight(either.Right.Get())
 	} else {
-		fLeft(either.left.Get())
+		fLeft(either.Left.Get())
 	}
 }
 
@@ -103,7 +103,7 @@ func (either Either[L, R]) BiForEach(fLeft func(L), fRight func(R)) {
 }
 
 func ToOption[L any, R any](either Either[L, R]) option.Option[R] {
-	return either.right
+	return either.Right
 }
 
 func (either Either[L, R]) ToOption() option.Option[R] {

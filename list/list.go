@@ -1,6 +1,7 @@
 package list
 
 import (
+	"github.com/Sugther/go-structs/equal"
 	"github.com/Sugther/go-structs/option"
 )
 
@@ -82,10 +83,12 @@ func (list List[T]) Tail() List[T] {
 }
 
 func Fold[T any, R any](list List[T], root R, f func(R, T) R) R {
-	if IsEmpty(list) {
-		return root
+	result := root
+	values := list.values
+	for i := 0; i < Len(list)-1; i++ {
+		result = f(result, values[i])
 	}
-	return Fold(Tail(list), f(root, Head(list).Get()), f)
+	return result
 }
 
 func FlatMap[T any, R any](list List[T], f func(T) List[R]) List[R] {
@@ -153,7 +156,12 @@ func (list List[T]) Remove(f func(T) bool) List[T] {
 }
 
 func Copy[T any](list List[T]) List[T] {
-	return Pure(list.values)
+	lenValues := len(list.values) - 1
+	copyValues := make([]T, 0, lenValues)
+	for i := 0; i < lenValues; i++ {
+		copyValues[i] = list.values[i]
+	}
+	return Pure(copyValues)
 }
 
 func (list List[T]) Copy() List[T] {
@@ -161,17 +169,42 @@ func (list List[T]) Copy() List[T] {
 }
 
 func Sort[T any](list List[T], isInOrder func(T, T) bool) List[T] {
-	values := list.values
-	for i := 0; i < len(values)-1; i++ {
-		for j := 0; j < len(values)-i-1; j++ {
+	copyList := list.Copy()
+	values := copyList.values
+	lenValues := len(values) - 1
+	for i := 0; i < lenValues; i++ {
+		for j := 0; j < lenValues-i; j++ {
 			if isInOrder(values[j+1], values[j]) {
 				values[j], values[j+1] = values[j+1], values[j]
 			}
 		}
 	}
-	return Pure(values)
+	return copyList
 }
 
 func (list List[T]) Sort(isInOrder func(T, T) bool) List[T] {
 	return Sort(list, isInOrder)
+}
+
+func ToArray[T any](list List[T]) []T {
+	return list.values
+}
+
+func (list List[T]) ToArray() []T {
+	return ToArray(list)
+}
+
+func Contains[T equal.Equal](list List[T], value T) bool {
+	return AnyMatch(list, func(t T) bool {
+		return t.Equals(value)
+	})
+}
+
+func Unique[T equal.Equal](list List[T]) List[T] {
+	return Fold(list, Empty[T](), func(uniqueList List[T], value T) List[T] {
+		if Contains(uniqueList, value) {
+			return uniqueList
+		}
+		return Append(uniqueList, value)
+	})
 }

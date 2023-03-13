@@ -90,6 +90,18 @@ func (opt Option[T]) ForEach(f func(T)) {
 	ForEach(opt, f)
 }
 
+func BiForEach[T any](opt Option[T], fEmpty func(), fPresent func(T)) {
+	if IsPresent(opt) {
+		fPresent(opt.value)
+	} else {
+		fEmpty()
+	}
+}
+
+func (opt Option[T]) BiForEach(fEmpty func(), fPresent func(T)) {
+	BiForEach(opt, fEmpty, fPresent)
+}
+
 func IfEmpty[T any](opt Option[T], f func()) {
 	if opt.isEmpty {
 		f()

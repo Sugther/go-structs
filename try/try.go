@@ -69,12 +69,16 @@ func (try Try[T]) Finally(f func(T)) Try[T] {
 	return Finally(try, f)
 }
 
-func End[T any](try Try[T]) {
+func End[T any](try Try[T]) Try[T] {
 	try.finallyFunction()
+	return Try[T]{
+		either:          try.either,
+		finallyFunction: func() {},
+	}
 }
 
-func (try Try[T]) End() {
-	End(try)
+func (try Try[T]) End() Try[T] {
+	return End(try)
 }
 
 func Fold[T any, R any](try Try[T], fFail func(error) R, fSuccess func(T) R) R {
@@ -118,7 +122,7 @@ func IfFail[T any](try Try[T], f func(error)) {
 	try.either.IfLeft(f)
 }
 
-func (try Try[T]) IfLeft(f func(error)) {
+func (try Try[T]) IfFail(f func(error)) {
 	IfFail(try, f)
 }
 
